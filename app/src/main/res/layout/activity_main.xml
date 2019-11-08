@@ -22,11 +22,11 @@
         app:layout_constraintVertical_bias="0.698" />
 
     <Button
-        android:id="@+id/btnWorld"
+        android:id="@+id/btnHelloGoodbye"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="worldClick"
-        android:text="World"
+        android:onClick="buttonClick"
+        android:text="GoodBye"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,11 +40,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="sceneClick"
-        android:text="Change"
+        android:text="Scene 2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.472"
-        app:layout_constraintStart_toEndOf="@+id/btnWorld"
+        app:layout_constraintStart_toEndOf="@+id/btnHelloGoodbye"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.306" />
 

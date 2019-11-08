@@ -1,100 +1,94 @@
 package edu.southhills.animationapp;
 
 import android.animation.ObjectAnimator;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.Fade;
 import android.transition.Scene;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.transition.TransitionSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class TransitionActivity extends AppCompatActivity {
 
-    private Boolean opacity = false;
+    private Boolean opacity = true;
+    private Boolean firstRun = true;
+    private Boolean sceneFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
         setContentView(R.layout.activity_transition);
 
-        ImageView imageView = findViewById(R.id.imageView);
-        imageView.setOnClickListener(view -> fade());
+    }
 
-        getWindow().setAllowEnterTransitionOverlap(true);
-        getWindow().setEnterTransition(new Fade());
-        getWindow().setExitTransition(new Fade());
+    public void startButton(View v){
+        if(!sceneFlag){
+            scene_a();
+        }else {
+            scene_b();
+        }
+        sceneFlag = !sceneFlag;
+        opacity = true;
     }
 
     public void backButton(View v){
         Intent homeIntent = new Intent(this, MainActivity.class);
-        Bundle animationBundle = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
-        startActivity(homeIntent, animationBundle);
+        startActivity(homeIntent);
     }
 
-    public void startTransition(){
-        ViewGroup thisRoot = (ViewGroup)findViewById(R.id.second_root);
-
-        TransitionManager.beginDelayedTransition(thisRoot, new TransitionSet()
-                .addTransition(new ChangeBounds())
-                .addTransition(new ChangeImageTransform()));
-
-        ImageView imageView = findViewById(R.id.imageView);
-
-        ViewGroup.LayoutParams params = imageView.getLayoutParams();
-
-        if(params.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        } else {
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-        imageView.setLayoutParams(params);
-
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-    }
-
-    public void fade(){
+    public void fadeImage(View v){
         float start = 1f;
         float end = 0;
 
-        if(opacity){
+        if(!opacity){
             start = 0;
             end = 1f;
-            opacity = false;
         }
+        opacity = !opacity;
 
         ImageView imageView = findViewById(R.id.imageView);
 
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(imageView, "alpha", start, end);
-        opacity = !opacity;
 
-        fadeOut.setDuration(3000);
+        fadeOut.setDuration(1500);
         fadeOut.setRepeatCount(0);
         fadeOut.start();
 
-
     }
 
-    public void sceneButton(View v){ scene_b(); }
+    private void scene_a(){
+        ViewGroup sceneContainer = findViewById(R.id.scene_root);
+        Scene myScene = Scene.getSceneForLayout(sceneContainer, R.layout.a_scene, this);
+
+        Transition transition = new Slide();
+
+        if(!firstRun){
+            transition = new ChangeBounds();
+            transition.setDuration(1500);
+            transition.setInterpolator(new OvershootInterpolator());
+        }
+
+        TransitionManager.go(myScene, transition);
+        firstRun = false;
+    }
 
     private void scene_b(){
         ViewGroup sceneContainer = findViewById(R.id.scene_root);
+        Scene newScene = Scene.getSceneForLayout(sceneContainer, R.layout.b_scene, this);
 
-        Scene myScene = Scene.getSceneForLayout(sceneContainer, R.layout.b_scene, this);
+        Transition bounce = new ChangeBounds();
+        bounce.setDuration(1500);
+        bounce.setInterpolator(new BounceInterpolator());
 
-        Transition slide = new Slide();
-
-        TransitionManager.go(myScene, slide);
+        TransitionManager.go(newScene, bounce);
     }
 }

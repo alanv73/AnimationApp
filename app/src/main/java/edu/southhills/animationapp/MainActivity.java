@@ -1,10 +1,8 @@
 package edu.southhills.animationapp;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -12,27 +10,22 @@ import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Boolean colorFlag = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
         setContentView(R.layout.activity_main);
-
-        getWindow().setAllowEnterTransitionOverlap(true);
-        getWindow().setEnterTransition(new Fade());
-        getWindow().setExitTransition(new Fade());
 
     }
 
-    public void worldClick(View v){
+    public void buttonClick(View v){
         sceneTransition();
     }
 
@@ -41,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     public void sceneTransition(){
         Transition customTransition = new CustomTransition();
         Transition slide = new Slide(Gravity.TOP);
-        customTransition.setDuration(3000);
-        slide.setDuration(4000);
+        customTransition.setDuration(1500);
+        slide.setDuration(2000);
 
         ViewGroup root = findViewById(R.id.scene_root);
 
@@ -56,12 +49,15 @@ public class MainActivity extends AppCompatActivity {
         TransitionManager.beginDelayedTransition(root, transitionSet);
 
         TextView textView = findViewById(R.id.textView);
+        Button button = findViewById(R.id.btnHelloGoodbye);
 
         if(textView.getVisibility() == View.VISIBLE) {
+            button.setText("Hello");
             textView.setText("GoodBye World!");
             textView.setTextColor(Color.BLACK);
             textView.setVisibility(View.INVISIBLE);
         } else {
+            button.setText("GoodBye");
             textView.setText("Hello World!");
             textView.setTextColor(Color.RED);
             textView.setVisibility(View.VISIBLE);
@@ -70,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void changeActivity(){
         Intent activityIntent = new Intent(this, TransitionActivity.class);
-        Bundle animationBundle = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
-        startActivity(activityIntent, animationBundle);
+        startActivity(activityIntent);
     }
 }
