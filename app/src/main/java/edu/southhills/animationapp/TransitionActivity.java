@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
+import android.transition.Fade;
 import android.transition.Scene;
 import android.transition.Slide;
 import android.transition.Transition;
@@ -18,9 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class TransitionActivity extends AppCompatActivity {
 
-    private Boolean opacity = true;
+    private Boolean imageVisible = true;
     private Boolean firstRun = true;
-    private Boolean sceneFlag = false;
+    private Boolean sceneFlag = true;
+    private final int FADE_IN = 1;
+    private final int FADE_OUT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +34,17 @@ public class TransitionActivity extends AppCompatActivity {
     }
 
     public void startButton(View v){
-        if(!sceneFlag){
+        if(sceneFlag){
             scene_a();
+            if(!firstRun){
+                fade(FADE_OUT);
+            }
         }else {
             scene_b();
+            fade(FADE_IN);
         }
         sceneFlag = !sceneFlag;
-        opacity = true;
+        imageVisible = true;
     }
 
     public void backButton(View v){
@@ -45,15 +52,23 @@ public class TransitionActivity extends AppCompatActivity {
         startActivity(homeIntent);
     }
 
-    public void fadeImage(View v){
+    public void imageClick(View v){
+        if (imageVisible){
+            fadeImage(FADE_OUT);
+        } else {
+            fadeImage(FADE_IN);
+        }
+        imageVisible = !imageVisible;
+    }
+
+    private void fadeImage(int direction){
         float start = 1f;
         float end = 0;
 
-        if(!opacity){
+        if(direction == FADE_IN){
             start = 0;
             end = 1f;
         }
-        opacity = !opacity;
 
         ImageView imageView = findViewById(R.id.imageView);
 
@@ -63,6 +78,21 @@ public class TransitionActivity extends AppCompatActivity {
         fadeOut.setRepeatCount(0);
         fadeOut.start();
 
+    }
+
+    private void fade(int direction){
+        ViewGroup root = findViewById(R.id.second_root);
+
+        Transition fade = new Fade(direction);
+
+        ImageView imageView = findViewById(R.id.imageView);
+        fade.addTarget(imageView);
+        fade.setDuration(2000);
+
+        TransitionManager.beginDelayedTransition(root, fade);
+
+
+        imageView.setVisibility(direction == FADE_IN ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void scene_a(){
@@ -78,6 +108,10 @@ public class TransitionActivity extends AppCompatActivity {
         }
 
         TransitionManager.go(myScene, transition);
+        if(firstRun){
+            ImageView imageView = findViewById(R.id.imageView);
+            imageView.setVisibility(View.INVISIBLE);
+        }
         firstRun = false;
     }
 
